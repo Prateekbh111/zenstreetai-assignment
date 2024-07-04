@@ -50,7 +50,6 @@ export const authOptions: NextAuthOptions = {
 			if (user) {
 				token._id = user._id?.toString();
 				token.username = user.username;
-				token.tree = user.tree;
 			}
 			return token;
 		},
@@ -58,7 +57,6 @@ export const authOptions: NextAuthOptions = {
 			if (token) {
 				session.user._id = token._id;
 				session.user.username = token.username;
-				session.user.tree = token.tree;
 			}
 			return session;
 		},

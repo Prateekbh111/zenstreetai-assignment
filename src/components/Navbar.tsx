@@ -1,6 +1,5 @@
 import { Network } from "lucide-react";
 import LogoutButton from "./LogoutButton";
-import { User } from "next-auth";
 
 export default function Navbar({ username }: { username: String }) {
 	return (

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 export { default } from "next-auth/middleware";
 import { getToken } from "next-auth/jwt";
 
+//middleware to not let unverified user to access authorized page
 export async function middleware(request: NextRequest) {
 	const token = await getToken({ req: request });
 	const url = request.nextUrl;

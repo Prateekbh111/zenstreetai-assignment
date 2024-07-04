@@ -8,10 +8,26 @@ export async function POST(req: Request) {
 	await dbConnect();
 
 	try {
+		//getting params from request
 		const { treeToBeSaved } = await req.json();
+
+		//geting session and user id from next-auth
 		const session = await getServerSession(authOptions);
+
+		//unauthorized acsess
+		if (!session) {
+			return Response.json(
+				{
+					success: false,
+					message: "Unauthorized access!!",
+				},
+				{ status: 401 }
+			);
+		}
+
 		const userId = new mongoose.Types.ObjectId(String(session?.user._id));
 
+		//finding and updating user with new tree
 		const updatedUserWithTree = await UserModel.findByIdAndUpdate(userId, {
 			tree: treeToBeSaved,
 		});
@@ -26,6 +42,7 @@ export async function POST(req: Request) {
 			);
 		}
 
+		//sending success response
 		return Response.json(
 			{
 				success: true,

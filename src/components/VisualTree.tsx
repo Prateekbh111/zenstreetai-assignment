@@ -15,17 +15,25 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { Button } from "./ui/button";
 import { Loader2 } from "lucide-react";
 import { deleteNode } from "@/lib/deleteNode";
+
+//rendring tree client side such that client can interact with it
 const Tree = dynamic(() => import("react-d3-tree"), {
 	ssr: false,
 });
 
 export default function VisualTree() {
 	const { toast } = useToast();
-	const [tree, setTree] = useState<RawNodeDatum | undefined>();
-	const [node, setNode] = useState<TreeNodeDatum | undefined>();
-	const [isSaving, setIsSaving] = useState(false);
-	const [isFetchingTree, setIsFetchingTree] = useState(false);
 
+	//state to store user tree
+	const [tree, setTree] = useState<RawNodeDatum | undefined>();
+	//state to store currently active node
+	const [node, setNode] = useState<TreeNodeDatum | undefined>();
+
+	//states for UI
+	const [isSaving, setIsSaving] = useState<boolean>(false);
+	const [isFetchingTree, setIsFetchingTree] = useState<boolean>(false);
+
+	//function to save the tree to database when save button in clicked
 	async function handleSave() {
 		setIsSaving(true);
 		try {
@@ -49,6 +57,7 @@ export default function VisualTree() {
 		}
 	}
 
+	//function to handle insert node event
 	function handleInsertNode(nodeName: string) {
 		const newTree = insertNode(node!.attributes!.id!.toString(), tree!, {
 			name: nodeName,
@@ -66,7 +75,9 @@ export default function VisualTree() {
 		toast({ title: "Node Created Successfully!!!" });
 	}
 
+	//function to handle delete node event
 	function handleDeleteNode() {
+		//checking whether the node has any children or not
 		if (node?.children?.length === 0) {
 			toast({ title: "Node doesn't have any children to delete!!!" });
 			return;
@@ -81,6 +92,7 @@ export default function VisualTree() {
 		toast({ title: "Node Deleted Successfully!!!" });
 	}
 
+	//custom svg nodes for react-d3-tree
 	function renderNodes(customProps: CustomNodeElementProps) {
 		const { nodeDatum } = customProps;
 
@@ -103,6 +115,7 @@ export default function VisualTree() {
 		);
 	}
 
+	//fetch user tree from database when the page mounts
 	useEffect(() => {
 		async function fetchUserTree() {
 			setIsFetchingTree(true);
@@ -131,7 +144,7 @@ export default function VisualTree() {
 
 	return (
 		<div className=" w-full h-[88%]">
-			{!tree ? (
+			{!tree || isFetchingTree ? (
 				<div className="flex items-center justify-center h-full">
 					<h1>Fetching Tree...</h1>
 				</div>

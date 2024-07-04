@@ -8,11 +8,25 @@ export async function GET() {
 	await dbConnect();
 
 	try {
+		//geting session and user id from next-auth
 		const session = await getServerSession(authOptions);
+		//unauthorized acsess
+		if (!session) {
+			return Response.json(
+				{
+					success: false,
+					message: "Unauthorized access!!",
+				},
+				{ status: 401 }
+			);
+		}
+
 		const userId = new mongoose.Types.ObjectId(String(session?.user._id));
 
+		//finding user with userid
 		const user = await UserModel.findById(userId);
-		console.log(user?.tree);
+
+		//returning response with tree
 		return Response.json(
 			{
 				success: true,

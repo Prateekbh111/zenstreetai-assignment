@@ -1,13 +1,14 @@
 import mongoose, { Schema } from "mongoose";
 import { RawNodeDatum } from "react-d3-tree";
-import { object } from "zod";
 
+//extending interface such that we can get suggestions in vscode
 export interface User extends Document {
 	username: string;
 	password: string;
 	tree: RawNodeDatum | RawNodeDatum[];
 }
 
+//defining user schema
 const userSchema: Schema<User> = new Schema({
 	username: {
 		type: String,
@@ -25,6 +26,7 @@ const userSchema: Schema<User> = new Schema({
 	},
 });
 
+//create usermodel using above defined schema
 const UserModel =
 	(mongoose.models.User as mongoose.Model<User>) ||
 	mongoose.model<User>("User", userSchema);

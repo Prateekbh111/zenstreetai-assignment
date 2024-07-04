@@ -6,11 +6,14 @@ export async function POST(request: Request) {
 	await dbConnect();
 
 	try {
+		//getting params from request
 		const { username, password, confirmPassword } = await request.json();
+
 		const existingUserWithUserName = await UserModel.findOne({
 			username,
 		});
 
+		//checking if user already exist in database
 		if (existingUserWithUserName) {
 			return Response.json(
 				{
@@ -21,6 +24,7 @@ export async function POST(request: Request) {
 			);
 		}
 
+		//checking if password and confirm password are same or not
 		if (password != confirmPassword) {
 			return Response.json(
 				{
@@ -31,8 +35,10 @@ export async function POST(request: Request) {
 			);
 		}
 
+		//hashing the password
 		const hashedPassword = await bcrypt.hash(password, 10);
 
+		//create new user with a dummy tree
 		const newUser = new UserModel({
 			username,
 			password: hashedPassword,
@@ -60,8 +66,10 @@ export async function POST(request: Request) {
 			},
 		});
 
+		//save created user to database
 		await newUser.save();
 
+		//sending success response
 		return Response.json(
 			{
 				success: true,
